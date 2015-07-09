@@ -41,11 +41,11 @@ steps:
       script: |-
          if hash wget 2>/dev/null; then
              echo "wget command is present"
-             wget --directory-prefix=$TARGET_HOME http://mirrors.koehn.com/apache/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.zip
+             wget --directory-prefix=$TARGET_HOME http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.tar.gz
          else
              if hash curl 2>/dev/null; then
                  echo "curl command is present"
-                 curl -o $TARGET_HOME/apache-tomcat-8.0.22.zip http://mirrors.koehn.com/apache/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.zip
+                 curl -o $TARGET_HOME/apache-tomcat-8.0.22.zip http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.tar.gz
              else
                  echo "Neither wget nor curl command is installed on this instance. Please install one of the packages before moving forward with this run book."
                  exit 1
