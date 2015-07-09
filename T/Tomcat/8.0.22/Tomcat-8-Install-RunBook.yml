@@ -52,7 +52,8 @@ steps:
              fi
          fi
 
-         unzip $TARGET_HOME/apache-tomcat-8.0.22.zip -d $TARGET_HOME
+         cd $TARGET_HOME
+         tar -xvf $TARGET_HOME/apache-tomcat-8.0.22.tar.gz
          chmod +rwx $TARGET_HOME/apache-tomcat-8.0.22/bin/*.sh
    itemType: Script
    nodeSet: 
