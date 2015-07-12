@@ -30,12 +30,30 @@ steps:
     invokingProgram: sh
     language: Shell
     reboot: false
-    script: "#!/bin/bash\n \n# Functions\nok() { echo \"Database $1 and user $2 created\
-      \ with a password $3\"; }\n \nEXPECTED_ARGS=3\nE_BADARGS=65\nMYSQL=`which mysql`\n\
-      \ \nQ1=\"CREATE DATABASE IF NOT EXISTS $1;\"\nQ2=\"GRANT ALL ON *.* TO '$2'@'localhost'\
-      \ IDENTIFIED BY '$3';\"\nQ3=\"FLUSH PRIVILEGES;\"\nSQL=\"${Q1}${Q2}${Q3}\"\n\
-      \ \nif [ $# -ne $EXPECTED_ARGS ]\nthen\n  echo \"Usage: $0 dbname dbuser dbpass\"\
-      \n  exit $E_BADARGS\nfi\n \n$MYSQL -uroot -p -e \"$SQL\"\n \nok \n"
+    script: |
+      #!/bin/bash
+
+      # Functions
+      ok() { echo "Database $1 and user $2 created with a password $3"; }
+
+      EXPECTED_ARGS=3
+      E_BADARGS=65
+      MYSQL=`which mysql`
+
+      Q1="CREATE DATABASE IF NOT EXISTS $1;"
+      Q2="GRANT ALL ON *.* TO '$2'@'localhost' IDENTIFIED BY '$3';"
+      Q3="FLUSH PRIVILEGES;"
+      SQL="${Q1}${Q2}${Q3}"
+
+      if [ $# -ne $EXPECTED_ARGS ]
+      then
+        echo "Usage: $0 dbname dbuser dbpass"
+        exit $E_BADARGS
+      fi
+
+      $MYSQL -uroot -p -e "$SQL"
+
+      ok
   itemType: Script
   name: Create Database & User
 - idempotent: false
@@ -75,12 +93,32 @@ steps:
     invokingProgram: sh
     language: Shell
     reboot: false
-    script: "LIMIT=20\n\nindex=0\nstatus=\"Offline\"\nwhile [ $index -le \"$LIMIT\"\
-      \ ]\ndo\n    index=$(($index+1))\n    sleep 1\n    wget -q --spider http://127.0.0.1:8080/dt-sample-web/index.html\n\
-      \    if [ $? -eq 0 ]; then\n        echo \"Online\"\n        status=\"Online\"\
-      \n        break\n    else\n        echo \"Offline\"\n    fi\ndone\n\nif [ $status\
-      \ = \"Offline\" ]\nthen\n    echo \"Sample Web Application NOT accessible.\"\
-      \n    exit 1\nelse \n    echo \"Sample Web Application accessible.\"\nfi"
+    script: |-
+      LIMIT=20
+
+      index=0
+      status="Offline"
+      while [ $index -le "$LIMIT" ]
+      do
+          index=$(($index+1))
+          sleep 1
+          wget -q --spider http://127.0.0.1:8080/dt-sample-web/index.html
+          if [ $? -eq 0 ]; then
+              echo "Online"
+              status="Online"
+              break
+          else
+              echo "Offline"
+          fi
+      done
+
+      if [ $status = "Offline" ]
+      then
+          echo "Sample Web Application NOT accessible."
+          exit 1
+      else
+          echo "Sample Web Application accessible."
+      fi
   itemType: Script
   name: Verify Application Access
 summary: This is a run book for installing sample web application on top of TOmcat 8 Server & MySQL Community Server version 5 on linux environments.
