@@ -1,4 +1,4 @@
-# This RunBook file is generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
+# This RunBook file generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
 !RunBook
 authors: Divine Cloud Team
 description: This run book installs Apache Tomcat version 8.0.22 on linux environments.
@@ -13,8 +13,10 @@ preRequisite: |-
   <li>wget utility for downloading tomcat binaries.</li>
   </ul>
 steps:
-- item: !ScriptItem
+- idempotent: false
+  item: !ScriptItem
     description: This step verifies if the provided target location has any files in it. If it does, it deletes those file, for a clean installation of tomcat server.
+    invokingProgram: sh
     language: Shell
     reboot: false
     script: |-
@@ -42,14 +44,15 @@ steps:
     required: false
     shared: true
     type: Text
-  reboot: false
-- item: !ScriptItem
+- idempotent: false
+  item: !ScriptItem
     description: |-
       In this step, the tomcat binary is downloaded using wget or curl based on which utlity is available.
 
       Once the download is successfull, the binary is unzipped to the TARGET_HOME folder.
 
       The shell scripts are given execute permissions to enable to start tomcat server.
+    invokingProgram: sh
     language: Shell
     reboot: false
     script: |-
@@ -71,9 +74,10 @@ steps:
       chmod +rwx $TARGET_HOME/apache-tomcat-8.0.22/bin/*.sh
   itemType: Script
   name: Tomcat Binary Download Step
-  reboot: false
-- item: !ScriptItem
+- idempotent: false
+  item: !ScriptItem
     description: This step verifies if the JAVA_HOME is set. If not set, the step exits the execution with appropriate message.
+    invokingProgram: sh
     language: Shell
     reboot: false
     script: |
@@ -95,9 +99,10 @@ steps:
       fi
   itemType: Script
   name: Java Installation Verification Step
-  reboot: false
-- item: !ScriptItem
+- idempotent: false
+  item: !ScriptItem
     description: This steps invoked the tomcat startup script.
+    invokingProgram: sh
     language: Shell
     reboot: false
     script: |-
@@ -106,9 +111,10 @@ steps:
       sleep 5
   itemType: Script
   name: Server Startup Step
-  reboot: false
-- item: !ScriptItem
+- idempotent: false
+  item: !ScriptItem
     description: In this step, we make multiple attempt to get the Tomcat Home page. If found, the server is considered to be successfully started. In not server startup has failed.
+    invokingProgram: sh
     language: Shell
     reboot: false
     script: |
@@ -139,6 +145,5 @@ steps:
       fi
   itemType: Script
   name: Server Connection Verification Step
-  reboot: false
 summary: This is a simple run book for installing tomcat version 8 on any linux environments.
 version: '1.0'
