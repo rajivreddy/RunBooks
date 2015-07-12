@@ -1,0 +1,87 @@
+# This RunBook file generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
+!RunBook
+authors: Divine Cloud Team
+description: |-
+  This runbook deploys a sample web application inside the tomcat container. <BR/>
+  This runbook references 2 more runbooks:
+  <UL>
+      <LI>MySQL 5 Server Install RunBook</LI>
+      <LI>Tomcat 8 Server Install RunBook</LI>
+  </UL>
+hardwareRequirements: Minimum memory of 512 MB or more.
+name: Sample Web Application Deployment RunBook
+preRequisite: |-
+  <UL>
+      <LI>Ensure java is installed</LI>
+      <LI>Ensure JAVA_HOME is set.</LI>
+  </UL>
+steps:
+- idempotent: false
+  item: !RunBookReferenceItem
+    description: This steps references the MySQL 5 Server installation runbook.
+    location: Http
+    reboot: false
+    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/M/mysql/5.6/MySQL_Server_5_Linux_Install.yml
+  itemType: RunBook
+  name: Install MySQL 5 Server
+- idempotent: false
+  item: !ScriptItem
+    description: This step creates the database and the user for the sample web application.
+    invokingProgram: sh
+    language: Shell
+    reboot: false
+    script: "#!/bin/bash\n \n# Functions\nok() { echo \"Database $1 and user $2 created\
+      \ with a password $3\"; }\n \nEXPECTED_ARGS=3\nE_BADARGS=65\nMYSQL=`which mysql`\n\
+      \ \nQ1=\"CREATE DATABASE IF NOT EXISTS $1;\"\nQ2=\"GRANT ALL ON *.* TO '$2'@'localhost'\
+      \ IDENTIFIED BY '$3';\"\nQ3=\"FLUSH PRIVILEGES;\"\nSQL=\"${Q1}${Q2}${Q3}\"\n\
+      \ \nif [ $# -ne $EXPECTED_ARGS ]\nthen\n  echo \"Usage: $0 dbname dbuser dbpass\"\
+      \n  exit $E_BADARGS\nfi\n \n$MYSQL -uroot -p -e \"$SQL\"\n \nok \n"
+  itemType: Script
+  name: Create Database & User
+- idempotent: false
+  item: !RunBookReferenceItem
+    description: This steps references the Tomcat 8 Server installation runbook.
+    location: Http
+    reboot: false
+    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/T/Tomcat/8.0.22/Tomcat-8-Install-RunBook.yml
+  itemType: RunBook
+  name: Install Tomcat 8 Server
+- idempotent: false
+  item: !ScriptItem
+    description: This steps downloads the web application war file to the target server.
+    invokingProgram: sh
+    language: Shell
+    reboot: false
+    script: |
+      echo $TARGET_HOME
+
+      if hash wget 2>/dev/null; then
+          echo "wget command is present"
+          wget --directory-prefix=/tmp/tomcat/apache-tomcat-8.0.22/webapps https://s3.amazonaws.com/artifacts.divineterminal.com/samples/dt-sample-web.war
+      else
+          if hash curl 2>/dev/null; then
+              echo "curl command is present"
+              curl -o /tmp/tomcat/apache-tomcat-8.0.22/webapps/dt-sample-web.war https://s3.amazonaws.com/artifacts.divineterminal.com/samples/dt-sample-web.war
+          else
+              echo "Neither wget nor curl command is installed on this instance. Please install one of the packages before moving forward with this run book."
+              exit 1
+          fi
+      fi
+  itemType: Script
+  name: Download Web Application war file
+- idempotent: false
+  item: !ScriptItem
+    description: This step verifies if the web application is successfully deployed.
+    invokingProgram: sh
+    language: Shell
+    reboot: false
+    script: "LIMIT=20\n\nindex=0\nstatus=\"Offline\"\nwhile [ $index -le \"$LIMIT\"\
+      \ ]\ndo\n    index=$(($index+1))\n    sleep 1\n    wget -q --spider http://127.0.0.1:8080/dt-sample-web/index.html\n\
+      \    if [ $? -eq 0 ]; then\n        echo \"Online\"\n        status=\"Online\"\
+      \n        break\n    else\n        echo \"Offline\"\n    fi\ndone\n\nif [ $status\
+      \ = \"Offline\" ]\nthen\n    echo \"Sample Web Application NOT accessible.\"\
+      \n    exit 1\nelse \n    echo \"Sample Web Application accessible.\"\nfi"
+  itemType: Script
+  name: Verify Application Access
+summary: This is a run book for installing sample web application on top of TOmcat 8 Server & MySQL Community Server version 5 on linux environments.
+version: '1.0'
