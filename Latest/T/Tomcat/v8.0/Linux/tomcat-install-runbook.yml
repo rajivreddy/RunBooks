@@ -1,38 +1,7 @@
 # This RunBook file generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
 !RunBook
 authors: Divine Cloud Team
-description: |-
-  <br>
-  This runbook deploys a sample web application inside the tomcat container. <br>
-  This runbook references 2 more runbooks:
-  <ul>
-      <li>MySQL 5 Server Install RunBook</li>
-      <li>Tomcat 8 Server Install RunBook</li>
-  </ul>
-
-  <br>
-
-  Using this runbook the web application components can be deployed in following different ways:
-  <br>
-  <table width="100%">
-  <tbody><tr>
-  <td width="15%">
-  </td>
-  <td width="70%">
-  <img src="https://s3.amazonaws.com/artifacts.divineterminal.com/samples/images/WebAppDeploy.png" align="center">
-  </td>
-  <td width="15%">
-  </td>
-  </tr>
-  </tbody></table>
-  <br>
-  As shown above:
-  <ul>
-      <li>In option A, both Tomcat and MySQL servers are installed on same Node.</li>
-      <li>In option B, Tomcat and MySQL servers are installed on separate Nodes</li>
-      <li>In option C, Tomcat and MySQL servers are installed on separate Nodes, and additionally there can be more than one instance of tomcat servers deployed on different Nodes.</li>
-  </ul>
-  <br><br>
+description: This runbook installs tomcat server on one or more nodes.
 hardwareRequirements: Minimum memory of 512 MB or more.
 name: Tomcat Install RunBook
 preRequisite: |-
@@ -49,7 +18,7 @@ properties:
   name: $TARGET_HOME
   required: false
   type: Text
-sequence: 8
+sequence: 12
 steps:
 - id: Id0k
   idempotent: false
