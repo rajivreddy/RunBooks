@@ -29,6 +29,7 @@ description: |-
 
   To install tomcat server on mulitple nodes at the same time, select those desired nodes, when executing the RunBook.
   <br><br>
+groupSteps: true
 hardwareRequirements: Minimum memory of 512 MB or more.
 name: Tomcat Install RunBook
 preRequisite: |-
@@ -40,12 +41,12 @@ preRequisite: |-
   </ul>
 properties:
 - defaultValue: /tmp/tomcat
-  description: Target folder location where the Tomcat server needs to be installed
   multiSelect: ''
   name: $TARGET_HOME
   required: false
   type: Text
-sequence: 20
+sequence: 24
+stepGroupsName: Install Tomcat Server
 steps:
 - id: Id0k
   idempotent: false
