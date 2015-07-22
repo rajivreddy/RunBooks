@@ -45,7 +45,7 @@ properties:
   name: $TARGET_HOME
   required: false
   type: Text
-sequence: 16
+sequence: 20
 steps:
 - id: Id0k
   idempotent: false
@@ -68,6 +68,10 @@ steps:
           echo "TARGET_HOME need to be specified"
           exit 1
       fi
+
+      if [ ! -d "$TARGET_HOME" ]; then
+          mkdir $TARGET_HOME
+      fi
   itemType: Script
   name: Existing Tomcat Server Cleanup
   nodeSet: TOMCAT
@@ -83,8 +87,20 @@ steps:
     invokingProgram: sh
     language: Shell
     reboot: false
-    script: |-
-      wget --directory-prefix=$TARGET_HOME http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.tar.gz
+    script: |
+      if hash wget 2>/dev/null; then
+        echo "wget command is present"
+        wget --directory-prefix=$TARGET_HOME http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.tar.gz
+      else
+        if hash curl 2>/dev/null; then
+          echo "curl command is present"
+          curl -o $TARGET_HOME/apache-tomcat-8.0.22.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.22/bin/apache-tomcat-8.0.22.tar.gz
+        else
+          echo "Neither wget nor curl command installed on this instance. Please install one of these two packages before moving forward with this runbook."
+          exit 1
+        fi
+      fi
+
       cd $TARGET_HOME
       tar -xvf $TARGET_HOME/apache-tomcat-8.0.22.tar.gz
       chmod +rwx $TARGET_HOME/apache-tomcat-8.0.22/bin/*.sh
