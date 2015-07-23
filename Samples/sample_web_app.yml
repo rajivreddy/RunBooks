@@ -13,7 +13,7 @@ description: |-
   <img src="https://s3.amazonaws.com/artifacts.divineterminal.com/samples/images/SampleAppDeploy.png" width="628px" height="324px">
 groupSteps: false
 hardwareRequirements: Minimum memory of 512 MB or more.
-name: DT Run Book
+name: Sample Web App Deploy Run Book
 preRequisite: |-
   <ul>
       <li>Ensure java is installed</li>
