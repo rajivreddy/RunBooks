@@ -2,71 +2,39 @@
 !RunBook
 authors: Divine Cloud Team
 description: |-
-  This runbook deploys a sample web application inside the tomcat container. <BR/>
-  This runbook references 2 more runbooks:
-  <UL>
-      <LI>MySQL 5 Server Install RunBook</LI>
-      <LI>Tomcat 8 Server Install RunBook</LI>
-  </UL>
+  This runbook deploys a sample web application inside the tomcat container. <br>
+  This runbook references:
+  <ul>
+      <li>Tomcat 8 Server Install RunBook</li>
+  </ul>
+
+  The figure below, shows different options for deploying the sample web app:
+  <br>
+  <img src="https://s3.amazonaws.com/artifacts.divineterminal.com/samples/images/SampleAppDeploy.png" width="628px" height="324px">
+groupSteps: false
 hardwareRequirements: Minimum memory of 512 MB or more.
-name: Sample Web Application Deployment RunBook
+name: DT Run Book
 preRequisite: |-
-  <UL>
-      <LI>Ensure java is installed</LI>
-      <LI>Ensure JAVA_HOME is set.</LI>
-  </UL>
+  <ul>
+      <li>Ensure java is installed</li>
+      <li>Ensure JAVA_HOME is set.</li>
+  </ul>
+sequence: 6
 steps:
-- idempotent: false
+- id: Id0j
+  idempotent: false
   item: !RunBookReferenceItem
-    description: This steps references the MySQL 5 Server installation runbook.
+    description: This step refers to Tomcat Server Installation Runbook.
     location: Http
     reboot: false
-    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/M/mysql/5.6/MySQL_Server_5_Linux_Install.yml
+    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/Samples/tomcat-install-runbook.yml
+    utilityMode: false
   itemType: RunBook
-  name: Install MySQL 5 Server
-- idempotent: false
+  name: Run Book Step
+- id: Id1F
+  idempotent: false
   item: !ScriptItem
-    description: This step creates the database and the user for the sample web application.
-    invokingProgram: sh
-    language: Shell
-    reboot: false
-    script: |
-      #!/bin/bash
-
-      # Functions
-      ok() { echo "Database $1 and user $2 created with a password $3"; }
-
-      EXPECTED_ARGS=3
-      E_BADARGS=65
-      MYSQL=`which mysql`
-
-      Q1="CREATE DATABASE IF NOT EXISTS $1;"
-      Q2="GRANT ALL ON *.* TO '$2'@'localhost' IDENTIFIED BY '$3';"
-      Q3="FLUSH PRIVILEGES;"
-      SQL="${Q1}${Q2}${Q3}"
-
-      if [ $# -ne $EXPECTED_ARGS ]
-      then
-        echo "Usage: $0 dbname dbuser dbpass"
-        exit $E_BADARGS
-      fi
-
-      $MYSQL -uroot -p -e "$SQL"
-
-      ok
-  itemType: Script
-  name: Create Database & User
-- idempotent: false
-  item: !RunBookReferenceItem
-    description: This steps references the Tomcat 8 Server installation runbook.
-    location: Http
-    reboot: false
-    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/T/Tomcat/8.0.22/Tomcat-8-Install-RunBook.yml
-  itemType: RunBook
-  name: Install Tomcat 8 Server
-- idempotent: false
-  item: !ScriptItem
-    description: This steps downloads the web application war file to the target server.
+    description: In this step, the sample app war is download and copied inside the Tomcat server webapps folder.
     invokingProgram: sh
     language: Shell
     reboot: false
@@ -86,10 +54,11 @@ steps:
           fi
       fi
   itemType: Script
-  name: Download Web Application war file
-- idempotent: false
+  name: Run Book Step
+- id: Id2P
+  idempotent: false
   item: !ScriptItem
-    description: This step verifies if the web application is successfully deployed.
+    description: In this step, we verify if the sample web app was successfully deployed.
     invokingProgram: sh
     language: Shell
     reboot: false
@@ -120,6 +89,8 @@ steps:
           echo "Sample Web Application accessible."
       fi
   itemType: Script
-  name: Verify Application Access
-summary: This is a run book for installing sample web application on top of TOmcat 8 Server & MySQL Community Server version 5 on linux environments.
+  name: Run Book Step
+summary: This is a run book for installing sample web application on top of Tomcat 8 Server.
+supportedOs: ''
+utilityMode: false
 version: '1.0'
