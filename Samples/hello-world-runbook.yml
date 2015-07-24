@@ -1,0 +1,30 @@
+# This RunBook file generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
+!RunBook
+authors: Divine Cloud Team
+description: This is a simple Hello World RunBook.
+groupSteps: false
+hardwareRequirements: '<i style="color: #c8c8c8;">None</i>'
+name: Hello World RunBook
+preRequisite: '<i style="color: #c8c8c8;">None</i>'
+sequence: 2
+steps:
+- id: Id0p
+  idempotent: false
+  item: !CommandItem
+    command: echo "Hello there"
+    description: This step displays the <b>"Hello there"</b> greetings when executed on any given node(s).
+    reboot: false
+  itemType: Command
+  name: Greetings Step
+- id: Id1Q
+  idempotent: false
+  item: !CommandItem
+    command: echo "Hello again"
+    description: This step displays the <b>"Hello again"</b> greetings when executed on any given node(s).
+    reboot: false
+  itemType: Command
+  name: Greetings Again Step
+summary: '<i style="color: #c8c8c8;">Simple runbook for deomnstration purpose.</i>'
+supportedOs: ''
+utilityMode: false
+version: '1.0'
