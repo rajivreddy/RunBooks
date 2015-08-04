@@ -1,0 +1,96 @@
+# This RunBook file generated using Divine Terminal. To download Free Edition of Divine Terminal go to www.divineterminal.com
+!RunBook
+authors: Divine Cloud Team
+description: |-
+  This runbook deploys a sample web application inside the tomcat container. <br>
+  This runbook references:
+  <ul>
+      <li>Tomcat 8 Server Install RunBook</li>
+  </ul>
+
+  The figure below, shows different options for deploying the sample web app:
+  <br>
+  <img src="https://s3.amazonaws.com/artifacts.divineterminal.com/samples/images/SampleAppDeploy.png" width="628px" height="324px">
+groupSteps: false
+hardwareRequirements: Minimum memory of 512 MB or more.
+name: Sample Web App Deploy Run Book
+preRequisite: |-
+  <ul>
+      <li>Ensure java is installed</li>
+      <li>Ensure JAVA_HOME is set.</li>
+  </ul>
+sequence: 6
+steps:
+- id: Id0j
+  idempotent: false
+  item: !RunBookReferenceItem
+    description: This step refers to Tomcat Server Installation Runbook.
+    location: Http
+    reboot: false
+    uri: https://raw.githubusercontent.com/divinecloud/RunBooks/master/Samples/tomcat-install-runbook.yml
+    utilityMode: false
+  itemType: RunBook
+  name: Run Book Step
+- id: Id1F
+  idempotent: false
+  item: !ScriptItem
+    description: In this step, the sample app war is download and copied inside the Tomcat server webapps folder.
+    invokingProgram: sh
+    language: Shell
+    reboot: false
+    script: |
+      echo $TARGET_HOME
+
+      if hash wget 2>/dev/null; then
+          echo "wget command is present"
+          wget --directory-prefix=/tmp/tomcat/apache-tomcat-8.0.22/webapps https://s3.amazonaws.com/artifacts.divineterminal.com/samples/dt-sample-web.war
+      else
+          if hash curl 2>/dev/null; then
+              echo "curl command is present"
+              curl -o /tmp/tomcat/apache-tomcat-8.0.22/webapps/dt-sample-web.war https://s3.amazonaws.com/artifacts.divineterminal.com/samples/dt-sample-web.war
+          else
+              echo "Neither wget nor curl command is installed on this instance. Please install one of the packages before moving forward with this run book."
+              exit 1
+          fi
+      fi
+  itemType: Script
+  name: Run Book Step
+- id: Id2P
+  idempotent: false
+  item: !ScriptItem
+    description: In this step, we verify if the sample web app was successfully deployed.
+    invokingProgram: sh
+    language: Shell
+    reboot: false
+    script: |-
+      LIMIT=20
+
+      index=0
+      status="Offline"
+      while [ $index -le "$LIMIT" ]
+      do
+          index=$(($index+1))
+          sleep 1
+          wget -q --spider http://127.0.0.1:8080/dt-sample-web/index.html
+          if [ $? -eq 0 ]; then
+              echo "Online"
+              status="Online"
+              break
+          else
+              echo "Offline"
+          fi
+      done
+
+      if [ $status = "Offline" ]
+      then
+          echo "Sample Web Application NOT accessible."
+          exit 1
+      else
+          echo "Sample Web Application accessible."
+      fi
+  itemType: Script
+  name: Run Book Step
+summary: This is a run book for installing sample web application on top of Tomcat 8 Server.
+supportedOs: ''
+utilityMode: false
+version: '1.0'
